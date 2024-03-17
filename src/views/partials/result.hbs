@@ -1,0 +1,31 @@
+
+{{#each offices}}
+  <div>
+    <h3>{{name}}</h3>
+    {{#each officials}}
+      <p><strong>{{name}}</strong>, {{party}}</p>
+      <span>Contact:</span>
+      <ul>
+      {{#each emails}}
+        <li>
+          <a href="mailto:{{this}}">{{this}}</a>
+        </li>
+      {{/each}}
+      {{#each phones}}
+        <li>
+          <a href="tel:{{this}}">{{this}}</a>
+        </li>
+      {{/each}}
+      </ul>
+      <span>Learn more:</span>
+      <ul>
+      {{#each urls}}
+        <li>
+          <a href="{{this}}">{{this}}</a>
+        </li>
+      {{/each}}
+      </ul>
+    {{/each}}
+  </div>
+  <br>
+{{/each}}

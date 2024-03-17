@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗳️</text></svg>">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="/javascripts/htmx.min.js"></script>
+    <title>Voter Portal Demo</title>
+  </head>
+  <body>
+    <header>
+      <a href="/">
+        <div id="emoji">🗳️❗</div>
+      </a>
+      <h1>Voter Portal Demo</h1>
+    </header>
+    <article>
+      <table>
+        <form hx-get="/search" hx-target="#result" hx-push-url="true">
+          <tbody>
+            <tr>
+              <td>
+                <label for="street">Street</label>
+              </td>
+              <td>
+                <input required type="text" name="street" placeholder="20 Jay Street">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="city">City</label>
+              </td>
+              <td>
+                <input required type="text" name="city" placeholder="Brooklyn">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="state">State</label>
+              </td>
+              <td>
+                <input required type="text" name="state" placeholder="NY">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="zip">Zip</label>
+              </td>
+              <td>
+                <input required type="text" name="zip" placeholder="11201">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input id="go" type="submit" value="Go!">
+              </td>
+            </tr>
+          </tbody>
+        </form>
+      </table>
+    </article>
+    <br>
+    <article id="result">
+      {{#if offices}}
+        {{> result }}
+      {{/if}}
+    </article>
+  </body>
+</html>

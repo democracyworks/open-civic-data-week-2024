@@ -1,0 +1,34 @@
+{
+  "name": "open-civic-data-week-2024",
+  "version": "1.0.0",
+  "description": "Demo voter portal powered by Google's civic information API, for NYC open civic data week 2024.",
+  "main": "./src/app.js",
+  "scripts": {
+    "dev": "nodemon --ext js,hbs ./src/bin/www",
+    "lint": "npx eslint ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/democracyworks/open-civic-data-week-2024.git"
+  },
+  "author": "Danny Pease",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/democracyworks/open-civic-data-week-2024/issues"
+  },
+  "homepage": "https://github.com/democracyworks/open-civic-data-week-2024#readme",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-google": "^0.14.0",
+    "nodemon": "^3.1.0"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "debug": "^4.3.4",
+    "express": "^4.18.3",
+    "hbs": "^4.2.0",
+    "helmet": "^7.1.0",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0"
+  }
+}

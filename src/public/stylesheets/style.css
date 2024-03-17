@@ -1,0 +1,16 @@
+body {
+  padding-left: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+div#emoji {
+  font-size: 80px;
+}
+
+td {
+  padding: 0 15px 10px 0;
+}
+
+a {
+  color: #00B7FF;
+}

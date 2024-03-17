@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  open_civic_data_week_2024:
+    container_name: open_civic_data_week_2024
+    build:
+      context: .
+      target:
+        dev
+    env_file: ./.env
+    ports:
+      - '3000:3000'
+    volumes:
+      - './src:/voter_portal_demo/src'
