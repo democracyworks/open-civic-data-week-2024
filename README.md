@@ -6,6 +6,8 @@ This demo web application uses the Civic Information API to power a basic voter 
 
 ## Installing & running the application
 
+To vend an API key, follow the instructions in [the documentation](https://developers.google.com/civic-information/docs/using_api#APIKey). Add the API key to a `.env` file in the root of this directory. See `.env.example`.
+
 Running this demo with docker compose (recommended) requires installing [Docker](https://docs.docker.com/get-docker/). To start the app in development mode, run:
 
 `make dev`
@@ -28,5 +30,4 @@ Democracy Works is a nonpartisan, nonprofit organization that collaborates with 
 ## Relevant links
 * [Google Civic Information API Homepage](https://developers.google.com/civic-information) 
 * [Google Civic Information API Reference](https://developers.google.com/civic-information/docs/v2) 
-* [How to provision credentials for the Civic Info API](https://developers.google.com/civic-information/docs/using_api#APIKey)
 * [DW API Documentation](https://developers.democracy.works/api/v2)
