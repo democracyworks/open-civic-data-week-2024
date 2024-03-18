@@ -22,22 +22,27 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/search', async (req, res, next) => {
+  // This object captures the data that will be passed to the template.
+  const data = {};
+
   const {
     street,
     city,
     state,
     zip,
   } = req.query;
-  const url = 'https://www.googleapis.com/civicinfo/v2/representatives?' +
+
+  // Query the Civic Info API
+  const civicInfoUrl = 'https://www.googleapis.com/civicinfo/v2/representatives?' +
     `key=${process.env.CIVIC_INFO_API_KEY}` +
     `&address=${street} ${city} ${state} ${zip}` +
     `&includeOffices=true`;
 
-  const response = await fetch(url);
-  const jsonResponse = await response.json();
+  const civicInfoResponse = await fetch(civicInfoUrl);
+  const civicInfoJsonResponse = await civicInfoResponse.json();
 
-  const offices = jsonResponse.offices;
-  const officials = jsonResponse.officials;
+  const offices = civicInfoJsonResponse.offices;
+  const officials = civicInfoJsonResponse.officials;
 
   // The API response splits offices and officials into separate objects. These
   // objects refer to each other by index.
@@ -48,13 +53,34 @@ app.get('/search', async (req, res, next) => {
     }
   }
 
-  // If this header is present in the request, we'll want to render only the
-  // partial template. Otherwise, assume that we're navigating directly to
-  // the page, and render the index.
+  // Let's reverse the order of the offices to show the most local first.
+  data.offices = offices.reverse();
+
+  // Query the DW API.
+  const dwUrl = 'https://api.qa.democracy.works/v2/authorities?' +
+    `address=${street} ${city} ${state} ${zip}`;
+
+  const dwResponse = await fetch(dwUrl, {
+    headers: {
+      'X-API-KEY': process.env.DW_API_KEY,
+      'ACCEPT-LANGUAGE': 'en-US',
+    },
+  });
+  const dwJsonResponse = await dwResponse.json();
+
+  // Same as with the civic info API, let's reverse the order of the offices
+  // to the most local first.
+  data.authorities = dwJsonResponse.data.authorities.reverse();
+
+  console.log(data.authorities[0], data.offices[0]);
+
+  // If the 'hx-target' header is present in the request, we'll want to render
+  // only the partial template. Otherwise, assume that we're navigating
+  // directly to the page, and render the index.
   if (req.headers['hx-target']) {
-    res.render('partials/result', {offices: offices.reverse()});
+    res.render('partials/result', {data});
   } else {
-    res.render('index', {offices: offices.reverse()});
+    res.render('index', {data});
   }
 });
 

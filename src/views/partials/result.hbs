@@ -1,5 +1,18 @@
+<h2>Authorites</h2>
+{{#each data.authorities}}
+  <div>
+    <h3>{{this.officeName}}</h3>
+    <p>{{this.officialTitle}}</p>
+    <span>Contact:</span>
+    <ul>
+      <li>{{this.contact.email}}</li>
+      <li>{{this.homepageUrl}}</li>
+    </ul>
+  </div>
+{{/each}}
 
-{{#each offices}}
+<h2>Elected Officials</h2>
+{{#each data.offices}}
   <div>
     <h3>{{name}}</h3>
     {{#each officials}}
