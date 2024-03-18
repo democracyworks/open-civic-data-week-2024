@@ -72,8 +72,6 @@ app.get('/search', async (req, res, next) => {
   // to the most local first.
   data.authorities = dwJsonResponse.data.authorities.reverse();
 
-  console.log(data.authorities[0], data.offices[0]);
-
   // If the 'hx-target' header is present in the request, we'll want to render
   // only the partial template. Otherwise, assume that we're navigating
   // directly to the page, and render the index.
