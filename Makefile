@@ -12,5 +12,5 @@ up:
 	docker compose up
 
 shell:
-	docker compose up open_civic_data_week_2024 \
-		sh
+	docker compose run open_civic_data_week_2024 \
+		/bin/bash
