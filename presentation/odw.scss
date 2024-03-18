@@ -1,0 +1,45 @@
+/*-- scss:defaults --*/
+
+@import url(https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap);
+
+
+// colors
+$body-bg: #fff !default;
+$body-color: #120844 !default;
+$link-color: #9a6ae9 !default;
+
+
+// fonts
+$font-family-sans-serif: "Atkinson Hyperlegible", sans-serif !default;
+
+// headings
+$presentation-heading-font: "Atkinson Hyperlegible", sans-serif !default;
+$presentation-heading-font-weight: 400 !default;
+
+// left hand sidebar
+$grid-sidebar-width: 200px !default;
+
+// main body
+$grid-body-width: 500px !default;
+
+
+/*-- scss:rules --*/
+#title-slide {
+  .title {
+    text-align: left;
+    color: #fff;
+  }
+
+  .subtitle {
+    text-align: left;
+    color: #41F6D5;
+  }
+  
+  .quarto-title-authors {
+    display:  flex;
+    justify-content: left;
+    color: #9a6ae9;
+  }
+  
+}
+

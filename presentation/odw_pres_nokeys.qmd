@@ -1,0 +1,184 @@
+---
+title: "Open Data Standards for Representative Government"
+title-slide-attributes:
+  data-background-image: images/odw_slide.jpg
+subtitle: "with Democracy Works & Google Civic Information API"
+author: 
+  - "Ursula Kaczmarek" 
+  - "Danny Pease"
+  - "Lauren Langenstein"
+execute:
+  echo: false
+  eval: true
+format:
+  revealjs:
+    theme: odw.scss
+    page-layout: custom
+    controls: true
+server: shiny
+---
+
+## political geography
+
+::: {.fragment .fade-in}
+interoperability (human and machine readable )
+
+![](images/ocd-id.png){fig-align="left"}
+:::
+
+::: {.fragment .fade-in}
+::: {.fragment .strike}
+shapefile
+:::
+:::
+
+::: {.fragment .fade-in}
+reliable identification
+:::
+
+------------------------------------------------------------------------
+
+### data mashup!
+::: {.fragment .fade-in}
+![](images/shibuya.gif){fig-align="center"}
+:::
+
+------------------------------------------------------------------------
+
+```{r}
+options(googleAuthR.client_id = Sys.getenv("GAR_CLIENT_ID"),
+        googleAuthR.client_secret = Sys.getenv("GAR_CLIENT_SECRET"))
+
+addresses <- as.character(c("669 East 21st Street Brooklyn NY 11226", 
+               "238 Hall Street Brooklyn NY 11205", 
+               "372 Kosciuszko Street Brooklyn NY 11221"))
+```
+
+```{r, echo = TRUE}
+#| code-line-numbers: "6-7|26"
+# political geography and representative information for single addresses
+library(tidyverse)
+library(httr)
+library(RSocrata)
+
+civic_info_url <- "https://www.googleapis.com/civicinfo/v2/representatives"
+nyc_xing_url <- "https://data.cityofnewyork.us/resource/8kuj-2n3u.json"
+
+get_ocdid_df <- function(input_address){
+    request <- GET(civic_info_url, 
+                   query = list(key = Sys.getenv("GOOGLE_CIVIC_API_KEY"),
+                                address = input_address))
+    stop_for_status(request)
+    response <- content(request)
+    output_tibble <- 
+      response$normalizedInput|> 
+      as_tibble() |> 
+      mutate(ocdid = response$divisions |> names() |> str_c(collapse = ",")) 
+    return(output_tibble)
+}
+
+ocdid_df <- addresses |> 
+  map_dfr(get_ocdid_df) |> 
+  transmute(address = line1,
+            ocdid = ocdid,
+            assemdist = gsub(".*sldl:([0-9]{2}),.*", "\\1", ocdid))
+                       
+nyc_df <- read.socrata(nyc_xing_url, app_token = Sys.getenv("SOCRATA_KEY")) |> 
+  inner_join(ocdid_df, by = "assemdist") 
+```
+
+
+------------------------------------------------------------------------
+
+```{r}
+df <- knitr::kable(nyc_df[1:15, c("address", "ocdid", "assemdist", "main_stree", "cross_stre", "installati")])
+
+kableExtra::kable_styling(df, font_size = 11)
+```
+
+
+------------------------------------------------------------------------
+
+```{r}
+#| context: setup
+library(leaflet)
+library(here)
+library(sf)
+
+# assembly district shapefile downloads: https://www.nyc.gov/site/planning/data-maps/open-data/bytes-archive.page
+# administrative and political districts
+
+################## uncomment to download+combine shapefiles for the first time ####################
+# shp_dir <- here("shiny/sldl/")
+
+# zips <- c("nyad_19d.zip", "nyad_20d.zip", "nyad_21d.zip", "nyad_22c.zip", "nyad_23d.zip")
+# urls <- paste0("https://s-media.nyc.gov/agencies/dcp/assets/files/zip/data-tools/bytes/", zips)
+# destfiles <- paste0(shp_dir, zips)
+
+# zipfiles <- Map(function(u, d) download.file(u, d), urls, destfiles)
+# sapply(list.files(shp_dir, pattern = "zip", full.names = TRUE), unzip, exdir = shp_dir)
+
+# files <- list.files(shp_dir, pattern = "[.]shp$", full.names = TRUE, recursive = TRUE)
+
+# write year into each sf dataframe
+# all_shapes <- lapply(files, st_read)
+# names(all_shapes) <- paste0("20", sub("^.+nyad_([0-9]{2}).*$", "\\1", dirname(files)))
+# 
+# for(i in seq_along(all_shapes)){
+#   all_shapes[[i]]$year = names(all_shapes)[i]
+# }
+
+# combine into single sf dataframe
+# districts <- st_as_sf(dplyr::bind_rows(all_shapes))
+# 
+# st_write(districts, here("shiny/districts.shp"), delete_layer = TRUE)
+districts <- st_read(here("shiny/districts.shp"), quiet = TRUE) |>
+  st_transform("+proj=longlat +datum=WGS84")
+```
+
+```{r}
+p("state assembly district boundaries of nyc: 2019-2023")
+sliderInput("year", "", min = 2019, max = 2023,
+  value = 2019, step = 1, sep = "")
+leafletOutput("map", height = 800)
+```
+
+```{r}
+#| context: server
+selected <- reactive({
+  districts[districts$year == input$year, ]
+})
+
+output$map <-renderLeaflet({
+  
+  leaflet(data = selected()) |> 
+    setView(lng = -73.956083, lat = 40.613598, zoom = 10) |> 
+    addProviderTiles(provider = "CartoDB.Positron") |> 
+    addPolygons(
+      fillColor = "#046b99",
+      weight = 2,
+      opacity = 0.8,
+      color = "#900042",
+      fillOpacity = 0.4,
+      label = paste0("year: ", selected()$year, br(), "district: ", selected()$AssemDist) |> 
+        lapply(htmltools::HTML)
+    )
+})
+```
+
+------------------------------------------------------------------------
+
+[2024 Election Coverage](https://www.votinginfoproject.org/election-coverage){preview-link="true"}
+
+------------------------------------------------------------------------
+
+[For developers](https://developers.google.com/civic-information/docs/using_api)
+
+
+
+[Getting started in R](https://github.com/willdebras/googlecivic)
+
+
+
+[Fork this repo](https://github.com/democracyworks/open-civic-data-week-2024)
+```https://github.com/democracyworks/open-civic-data-week-2024```
